@@ -25,8 +25,12 @@ protected:
 public:
   TDynamicVector(size_t size = 1) : sz(size)
   {
-    if (sz == 0)
-      throw out_of_range("Vector size should be greater than zero");
+      if (sz == 0)
+          throw out_of_range("Vector size should be greater than zero");
+      if (sz < 0)
+          throw out_of_range("Vector size should be greater than negative");
+      if (sz > 100000000)
+          throw out_of_range("The vector size must be less than the maximum vector size");
     pMem = new T[sz]();// {}; // У типа T д.б. констуктор по умолчанию
   }
   TDynamicVector(T* arr, size_t s) : sz(s)
@@ -59,6 +63,7 @@ public:
           TDynamicVector tmp(v);
           swap(*this, tmp);
       }
+      else throw ("can_assign_vector_to_itself");
       return *this;
   }
   TDynamicVector& operator=(TDynamicVector&& v) noexcept
@@ -78,11 +83,19 @@ public:
 
   // индексация
   T& operator[](size_t ind)
-  { 
+  {
+      if (ind >= sz)
+          throw out_of_range("Index is out of range");
+      if (ind < 0)
+          throw out_of_range("Index is negative");
 	  return pMem[ind];
   }
   const T& operator[](size_t ind) const
   {
+      if (ind >= sz)
+          throw out_of_range("Index is out of range");
+      if (ind < 0)
+          throw out_of_range("Index is negative");
 	  return pMem[ind]; 
   }
   // индексация с контролем
@@ -149,6 +162,7 @@ public:
   // векторные операции
   TDynamicVector operator+(const TDynamicVector& v)
   {
+      if (sz != v.sz) throw ("vectors_with_not_equal_size");
       TDynamicVector res(*this);
       for (int i = 0; i < sz; i++)
           res.pMem[i] += v.pMem[i];
@@ -156,6 +170,7 @@ public:
   }
   TDynamicVector operator-(const TDynamicVector& v)
   {
+      if (sz != v.sz) throw ("vectors_with_not_equal_size");
       TDynamicVector res(*this);
       for (int i = 0; i < sz; i++)
           res.pMem[i] -= v.pMem[i];
@@ -163,6 +178,7 @@ public:
   }
   T operator*(const TDynamicVector& v) noexcept(noexcept(T()))
   {
+      if (sz != v.sz) throw ("vectors_with_not_equal_size");
 	  T res = T();
       for (int i = 0; i < sz; i++)
 		  res += pMem[i] * v.pMem[i];
