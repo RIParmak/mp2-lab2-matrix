@@ -29,7 +29,7 @@ public:
           throw out_of_range("Vector size should be greater than zero");
       if (sz < 0)
           throw out_of_range("Vector size should be greater than negative");
-      if (sz > 100000000)
+      if (sz > MAX_VECTOR_SIZE)
           throw out_of_range("The vector size must be less than the maximum vector size");
     pMem = new T[sz]();// {}; // У типа T д.б. констуктор по умолчанию
   }
@@ -217,21 +217,36 @@ class TDynamicMatrix : private TDynamicVector<TDynamicVector<T>>
 public:
   TDynamicMatrix(size_t s = 1) : TDynamicVector<TDynamicVector<T>>(s)
   {
+      if (s == 0)
+          throw out_of_range("Vector size should be greater than zero");
+      if (s < 0)
+          throw out_of_range("Vector size should be greater than negative");
+      if (s > MAX_MATRIX_SIZE)
+          throw out_of_range("The vector size must be less than the maximum vector size");
     for (size_t i = 0; i < sz; i++)
       pMem[i] = TDynamicVector<T>(sz);
   }
 
   using TDynamicVector<TDynamicVector<T>>::operator[];
-
+  using TDynamicVector<TDynamicVector<T>>::size;
   // сравнение
   bool operator==(const TDynamicMatrix& m) const noexcept
   {
       if (sz != m.sz)
-		  return false;
+          return false;
       for (size_t i = 0; i < sz; i++)
           if (pMem[i] != m.pMem[i])
-			  return false;
-	  return true;
+              return false;
+      return true;
+  }  
+  bool operator!=(const TDynamicMatrix& m) const noexcept
+  {
+      if (sz != m.sz)
+          return true;
+      for (size_t i = 0; i < sz; i++)
+          if (pMem[i] != m.pMem[i])
+              return true;
+      return false;
   }
 
   // матрично-скалярные операции
@@ -276,7 +291,6 @@ public:
 				  res.pMem[i][j] += pMem[i][k] * m.pMem[k][j];
 	  return res;
   }
-
   // ввод/вывод
   friend istream& operator>>(istream& istr, TDynamicMatrix& v)
   {
