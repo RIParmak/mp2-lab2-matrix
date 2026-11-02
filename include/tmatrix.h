@@ -66,18 +66,18 @@ public:
       else throw ("can_assign_vector_to_itself");
       return *this;
   }
-  TDynamicVector& operator=(TDynamicVector&& v) noexcept
-  {
-      if (this != &v)
+      TDynamicVector& operator=(TDynamicVector&& v) noexcept
       {
-          delete[] pMem;
-          pMem = v.pMem;
-          sz = v.sz;
-          v.pMem = nullptr;
-          v.sz = 0;
+          if (this != &v)
+          {
+              delete[] pMem;
+              pMem = v.pMem;
+              sz = v.sz;
+              v.pMem = nullptr;
+              v.sz = 0;
+          }
+	      return *this;
       }
-	  return *this;
-  }
 
   size_t size() const noexcept { return sz; }
 
